@@ -2,238 +2,191 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2f5d3f">
-<title>🐑 Gestion de Moutons</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173b2b">
+<title>Ferme Khaldi — Gestion des moutons</title>
 <style>
-:root{
-  --bg:#f6f4ef; --card:#fff; --text:#2b2a27; --muted:#8a857c;
-  --accent:#4a7c59; --accent2:#2f5d3f; --border:#e3ded3;
-  --danger:#c0392b; --warn:#d68910; --info:#2e6da4; --radius:12px;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  background:var(--bg);color:var(--text);font-size:15px;line-height:1.45}
-
-/* ---------- En-tête ---------- */
-header{background:var(--accent2);color:#fff;padding:14px 16px 0;position:sticky;top:0;z-index:20;
-  box-shadow:0 2px 10px rgba(0,0,0,.18)}
-header .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-h1{font-size:1.1rem;margin:0;font-weight:600}
-nav{display:flex;gap:6px;margin-top:12px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-nav button{flex:0 0 auto;border:0;background:rgba(255,255,255,.15);color:#fff;
-  padding:8px 14px;border-radius:999px;font-size:.86rem;font-weight:500;cursor:pointer;font-family:inherit}
-nav button.active{background:#fff;color:var(--accent2);font-weight:600}
-
-main{max-width:860px;margin:0 auto;padding:16px 14px 70px}
+:root{--green:#173b2b;--cream:#f6f4ec;--line:#d8ded7;--ink:#202820}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--cream);color:var(--ink)}
+header{background:var(--green);color:#fff;padding:18px 15px}
+h1{font-size:22px;margin:0 0 5px} header p{margin:0;font-size:13px;opacity:.9}
+main{max-width:900px;margin:auto;padding:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat strong{display:block;font-size:23px}.stat span{font-size:12px;color:#536052}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+h2{font-size:17px;margin:0 0 12px}
+.filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+button,.tab{font:inherit;border:0;border-radius:9px;padding:10px 12px;background:#e9eee8;color:#203426;cursor:pointer}
+button.primary{background:var(--green);color:white}
+button.danger{background:#fff0ed;color:#9c2e20}
+button.active{outline:2px solid #173b2b;outline-offset:1px}
+input,select,textarea{width:100%;font:inherit;border:1px solid #cbd4ca;border-radius:9px;padding:10px;background:#fff;color:#202820}
+label{display:block;font-size:13px;font-weight:bold;margin:9px 0 5px}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.small{font-size:12px;color:#5c685d}
+.animal-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
+.animal{border:1px solid #d7ded6;border-left:7px solid #bbb;border-radius:10px;padding:10px;background:white;text-align:left;min-height:74px}
+.animal strong{display:block;font-size:16px;margin-bottom:5px}.animal span{font-size:12px;color:#465248}
+.tag{display:inline-block;font-size:11px;border-radius:20px;padding:3px 7px;background:#f1f2ee}
+.yellow{border-left-color:#e7bf19;background:#fffbed}.orange{border-left-color:#ef8425;background:#fff4e9}
+.green{border-left-color:#27864d;background:#edf8ef}.white{border-left-color:#bfc6c8;background:#fff}
+.blue{border-left-color:#2476ce;background:#edf5ff}
 .hidden{display:none!important}
-.muted{color:var(--muted);font-size:.85rem}
-
-/* ---------- Cartes ---------- */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-  padding:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
-.sheep-card{display:flex;gap:12px;align-items:center;cursor:pointer}
-.sheep-card:active{opacity:.75}
-.tag-badge{background:var(--accent2);color:#fff;font-weight:700;font-size:.8rem;
-  padding:9px 8px;border-radius:10px;min-width:64px;max-width:90px;text-align:center;
-  letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 0 auto}
-.sheep-info{flex:1;min-width:0}
-.sheep-name{font-weight:600;font-size:.98rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sheep-sub{font-size:.82rem;color:var(--muted);margin-top:2px}
-.sheep-right{text-align:right;flex:0 0 auto}
-
-/* ---------- Badges statut ---------- */
-.badge{display:inline-block;font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
-.b-actif{background:#e2f0e6;color:#2f6b45}
-.b-vendu{background:#e0ebf6;color:#2e6da4}
-.b-reforme{background:#fbeed7;color:#a56b0d}
-.b-mort{background:#eceae6;color:#7a7468}
-
-/* ---------- Filtres ---------- */
-.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.filters input{grid-column:1/-1}
-input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;
-  font-family:inherit;font-size:.92rem;background:#fff;color:var(--text);outline:none}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(74,124,89,.12)}
-textarea{resize:vertical;min-height:64px}
-
-/* ---------- Boutons ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  background:var(--accent);color:#fff;border:0;padding:11px 18px;border-radius:10px;
-  font-family:inherit;font-size:.92rem;font-weight:600;cursor:pointer}
-.btn:active{opacity:.85}
-.btn.ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
-.btn.danger{background:#fbeae8;color:var(--danger);border:1px solid #f0cdc8}
-.btn.full{width:100%}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.btn-row .btn{flex:1;min-width:120px}
-
-/* ---------- Formulaire ---------- */
-.form label{display:block;margin-bottom:12px;font-size:.82rem;font-weight:600;color:var(--muted)}
-.form label input,.form label select,.form label textarea{margin-top:5px;font-weight:400;color:var(--text)}
-.form-actions{display:flex;gap:8px;margin-top:6px}
-.form-actions .btn{flex:1}
-
-/* ---------- Modale ---------- */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;
-  display:flex;align-items:flex-end;justify-content:center}
-.modal{background:var(--card);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
-  border-radius:18px 18px 0 0;padding:0 16px 24px}
-@media(min-width:640px){.overlay{align-items:center;padding:20px}.modal{border-radius:16px}}
-.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  position:sticky;top:0;background:var(--card);padding:16px 0 12px;z-index:5;
-  border-bottom:1px solid var(--border);margin-bottom:16px}
-.modal-head h2{font-size:1.02rem;margin:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.modal-head button{border:0;background:#f0eee9;width:34px;height:34px;border-radius:50%;
-  font-size:1rem;cursor:pointer;color:var(--text);flex:0 0 auto}
-
-/* ---------- Détail ---------- */
-.detail-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
-.detail-head .tag-badge{font-size:1rem;padding:14px 12px;min-width:80px}
-.detail-name{font-size:1.1rem;font-weight:600}
-.sec-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-  color:var(--muted);margin:20px 0 10px}
-
-/* ---------- Lignes de données ---------- */
-.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0eee9;font-size:.9rem}
-.row:last-child{border-bottom:0}
-.row .date{flex:0 0 78px;color:var(--muted);font-size:.8rem}
-.row .txt{flex:1;min-width:0}
-.row .val{font-weight:600;flex:0 0 auto}
-.row .del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:2px 4px}
-.wbar{height:7px;background:#eceae4;border-radius:99px;overflow:hidden;flex:1;min-width:40px;max-width:120px}
-.wbar > div{height:100%;background:var(--accent);border-radius:99px}
-.ev-icon{flex:0 0 auto;font-size:1rem}
-
-/* ---------- Stats ---------- */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
-.stat .num{font-size:1.6rem;font-weight:700;color:var(--accent2);line-height:1.1}
-.stat .lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
-.dist-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:.86rem}
-.dist-row .dl{flex:0 0 80px;color:var(--muted)}
-.dist-row .dbar{flex:1;height:9px;background:#eceae4;border-radius:99px;overflow:hidden}
-.dist-row .dbar > div{height:100%;border-radius:99px;background:var(--accent)}
-.dist-row .dn{flex:0 0 30px;text-align:right;font-weight:600}
-
-.empty{text-align:center;padding:50px 20px;color:var(--muted)}
-.empty .big{font-size:2.6rem;margin-bottom:10px}
-
-.hint{background:#eef4ef;border-left:3px solid var(--accent);padding:12px 14px;
-  border-radius:8px;font-size:.86rem;color:#3d5c47;margin-bottom:14px;line-height:1.5}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+#message{min-height:18px;font-size:13px;color:#1e6a38;margin-top:8px}
+footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
+@media(max-width:520px){.stats{grid-template-columns:repeat(3,1fr)}.stat{padding:9px 4px}.stat strong{font-size:19px}.formgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="top"><h1>🐑 Gestion de Moutons</h1></div>
-  <nav>
-    <button data-tab="troupeau" class="active">Troupeau</button>
-    <button data-tab="stats">Statistiques</button>
-    <button data-tab="sauvegarde">Sauvegarde</button>
-  </nav>
+  <h1>🐑 Ferme Khaldi</h1>
+  <p>Gestion du troupeau — fonctionne hors connexion sur cet appareil</p>
 </header>
-
 <main>
-  <!-- TROUPEAU -->
-  <section id="tab-troupeau">
-    <div class="btn-row">
-      <button class="btn" onclick="openSheepForm()">➕ Ajouter un mouton</button>
+  <div class="stats">
+    <div class="stat"><strong id="totalCount">385</strong><span>Fiches créées</span></div>
+    <div class="stat"><strong id="presentCount">385</strong><span>Présents</span></div>
+    <div class="stat"><strong id="youngCount">20</strong><span>Femelles blanches</span></div>
+  </div>
+
+  <section class="panel">
+    <h2>1. Rechercher et choisir une catégorie</h2>
+    <input id="search" type="search" placeholder="Rechercher un numéro, une mère, une note…">
+    <div class="filters" style="margin-top:10px">
+      <button class="active" data-filter="all">Tous</button>
+      <button data-filter="yellow">🟡 Brebis jaunes (1–100)</button>
+      <button data-filter="orange">🟠 Brebis orange (1–100)</button>
+      <button data-filter="green">🟢 Brebis vertes (1–100)</button>
+      <button data-filter="white">⚪ Femelles blanches (1–20)</button>
+      <button data-filter="blue">🔵 Mâles bleus (1–65)</button>
     </div>
-    <div class="filters">
-      <input id="search" placeholder="🔍 Rechercher (boucle, nom, race)">
-      <select id="filterSex">
-        <option value="">Tous sexes</option>
-        <option value="F">Femelles</option>
-        <option value="M">Mâles</option>
-      </select>
-      <select id="filterStatus">
-        <option value="">Tous statuts</option>
-        <option value="actif">Actifs</option>
-        <option value="vendu">Vendus</option>
-        <option value="reforme">Réformés</option>
-        <option value="mort">Morts</option>
-      </select>
-    </div>
-    <div id="sheepList"></div>
+    <p class="small">Touchez une fiche pour la consulter ou modifier ses informations.</p>
+    <div id="animalList" class="animal-list"></div>
   </section>
 
-  <!-- STATISTIQUES -->
-  <section id="tab-stats" class="hidden"></section>
+  <section class="panel" id="recordPanel">
+    <h2>2. Fiche de l’animal</h2>
+    <div class="formgrid">
+      <div><label for="animalId">Numéro / catégorie</label><input id="animalId" readonly></div>
+      <div><label for="status">Statut</label><select id="status"><option>Présent</option><option>Vendu</option><option>Mort</option><option>Absent</option></select></div>
+      <div><label for="name">Nom (facultatif)</label><input id="name" placeholder="Nom de l’animal"></div>
+      <div><label for="mother">Numéro de la mère</label><input id="mother" placeholder="Ex. Brebis verte 12"></div>
+      <div><label for="birth">Date de naissance</label><input id="birth" type="date"></div>
+      <div><label for="lastHealth">Dernier soin / vaccin</label><input id="lastHealth" placeholder="Produit et date"></div>
+    </div>
+    <label for="notes">Observations</label>
+    <textarea id="notes" rows="3" placeholder="Gestation, mise bas, santé, traitement, poids…"></textarea>
+    <div class="actions">
+      <button class="primary" id="saveBtn">Enregistrer la fiche</button>
+      <button id="newBtn">Nouvelle fiche / vider</button>
+    </div>
+    <div id="message" role="status"></div>
+  </section>
 
-  <!-- SAUVEGARDE -->
-  <section id="tab-sauvegarde" class="hidden">
-    <div class="hint">
-      Vos données sont enregistrées <strong>uniquement sur cet appareil</strong>, dans le navigateur.
-      Pensez à exporter régulièrement une sauvegarde pour ne rien perdre.
+  <section class="panel">
+    <h2>3. Sauvegarde des données</h2>
+    <p class="small">Les changements sont enregistrés dans le stockage local de ce navigateur. Exportez régulièrement une copie JSON pour la conserver.</p>
+    <div class="actions">
+      <button class="primary" id="exportBtn">Exporter la sauvegarde</button>
+      <button id="importBtn">Importer une sauvegarde</button>
+      <button class="danger" id="resetBtn">Réinitialiser les fiches préremplies</button>
+      <input id="importFile" type="file" accept=".json,application/json" class="hidden">
     </div>
-    <div class="card">
-      <h3 style="margin:0 0 6px;font-size:1rem">📤 Exporter</h3>
-      <p class="muted" style="margin:0 0 12px">Télécharge un fichier contenant tous vos moutons.</p>
-      <button class="btn full" onclick="exportData()">Exporter la sauvegarde (.json)</button>
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 6px;font-size:1rem">📥 Importer</h3>
-      <p class="muted" style="margin:0 0 12px">Restaure une sauvegarde depuis un fichier .json.</p>
-      <input type="file" id="importFile" accept=".json,application/json">
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 6px;font-size:1rem;color:var(--danger)">🗑️ Tout effacer</h3>
-      <p class="muted" style="margin:0 0 12px">Supprime définitivement tous les moutons de cet appareil.</p>
-      <button class="btn danger full" onclick="wipeAll()">Effacer toutes les données</button>
-    </div>
-    <p class="muted" style="text-align:center;margin-top:20px">
-      Application hors ligne — aucune connexion requise.
-    </p>
+    <p class="small">Important : ne supprimez pas les données du navigateur si vous voulez garder les fiches sur cet iPhone. Pour une utilisation hors connexion, ouvrez cette page une première fois avec Internet puis gardez la même adresse et le même navigateur.</p>
   </section>
 </main>
-
-<!-- MODALE -->
-<div id="overlay" class="overlay hidden">
-  <div class="modal">
-    <div class="modal-head">
-      <h2 id="modalTitle">Titre</h2>
-      <button onclick="closeModal()" aria-label="Fermer">✕</button>
-    </div>
-    <div id="modalBody"></div>
-  </div>
-</div>
-
+<footer>Ferme Khaldi • Version locale • Données conservées sur cet appareil</footer>
 <script>
-/* ================= ÉTAT & STOCKAGE ================= */
-const STORE_KEY = 'moutons_v1';
-let state = { sheep: [] };
-
-function load() {
-  try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (raw) {
-      const d = JSON.parse(raw);
-      if (d && Array.isArray(d.sheep)) state = d;
-    }
-  } catch (e) { console.warn('Lecture impossible', e); }
+const categories = [
+  {key:'yellow',label:'Brebis jaune',prefix:'Jaune',count:100,kind:'Femelle'},
+  {key:'orange',label:'Brebis orange',prefix:'Orange',count:100,kind:'Femelle'},
+  {key:'green',label:'Brebis verte',prefix:'Verte',count:100,kind:'Femelle'},
+  {key:'white',label:'Femelle blanche',prefix:'Blanche',count:20,kind:'Jeune femelle'},
+  {key:'blue',label:'Mâle bleu',prefix:'Bleu',count:65,kind:'Mâle'}
+];
+const STORE='fermeKhaldiSheep_v1';
+let animals=[];
+let selectedKey=null;
+let activeFilter='all';
+function keyFor(cat,n){return cat+'-'+n}
+function initialAnimals(){
+  const a=[];
+  categories.forEach(c=>{for(let n=1;n<=c.count;n++){
+    a.push({key:keyFor(c.key,n),cat:c.key,number:n,label:c.label+' '+n,kind:c.kind,status:'Présent',name:'',mother:'',birth:'',lastHealth:'',notes:''});
+  }});
+  return a;
 }
-function save() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
-  catch (e) { alert('⚠️ Sauvegarde impossible : le stockage du navigateur est plein.'); }
+function load(){
+  try{const raw=localStorage.getItem(STORE);if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed)&&parsed.length){animals=parsed;return;}}}catch(e){}
+  animals=initialAnimals();persist();
 }
-
-/* ================= UTILITAIRES ================= */
-const $ = s => document.querySelector(s);
-const STATUS = { actif:'Actif', vendu:'Vendu', reforme:'Réformé', mort:'Mort' };
-const EVENT_TYPES = {
-  vaccination:{label:'Vaccination', icon:'💉'},
-  vermifuge:{label:'Vermifuge', icon:'💊'},
-  traitement:{label:'Traitement', icon:'🩹'},
-  veterinaire:{label:'Vétérinaire', icon:'🩺'},
-  saillie:{label:'Saillie', icon:'❤️'},
-  misebas:{label:'Mise bas', icon:'🐣'},
-  tonte:{label:'Tonte', icon:'✂️'},
-  vente:{label:'Vente', icon:'💰'},
-  autre:{label:'Autre', icon:'📝'}
-};
-
-function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
-function todayISO(){ const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(animals));}catch(e){setMessage('Stockage indisponible : exportez vos données pour ne pas les perdre.',true);}}
+function setMessage(msg,error=false){const el=document.getElementById('message');el.textContent=msg;el.style.color=error?'#a52c1d':'#1e6a38';}
+function getCategory(k){return categories.find(c=>c.key===k)}
+function visibleAnimals(){
+ const q=document.getElementById('search').value.trim().toLowerCase();
+ return animals.filter(a=>(activeFilter==='all'||a.cat===activeFilter)&&(!q||[a.label,a.name,a.mother,a.notes,a.status,a.lastHealth].join(' ').toLowerCase().includes(q)));
+}
+function render(){
+ const list=document.getElementById('animalList');list.innerHTML='';
+ const visible=visibleAnimals();
+ visible.forEach(a=>{
+   const b=document.createElement('button');b.className='animal '+a.cat;
+   b.innerHTML='<strong>'+escapeHtml(a.label)+'</strong><span>'+escapeHtml(a.status)+(a.name?' • '+escapeHtml(a.name):'')+'</span>';
+   b.addEventListener('click',()=>selectAnimal(a.key));list.appendChild(b);
+ });
+ if(!visible.length)list.innerHTML='<p>Aucun animal trouvé.</p>';
+ document.getElementById('totalCount').textContent=animals.length;
+ document.getElementById('presentCount').textContent=animals.filter(a=>a.status==='Présent').length;
+ document.getElementById('youngCount').textContent=animals.filter(a=>a.cat==='white'&&a.status==='Présent').length;
+}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function selectAnimal(k){
+ const a=animals.find(x=>x.key===k);if(!a)return;selectedKey=k;
+ document.getElementById('animalId').value=a.label+' — '+a.kind;
+ document.getElementById('status').value=a.status||'Présent';
+ document.getElementById('name').value=a.name||'';
+ document.getElementById('mother').value=a.mother||'';
+ document.getElementById('birth').value=a.birth||'';
+ document.getElementById('lastHealth').value=a.lastHealth||'';
+ document.getElementById('notes').value=a.notes||'';
+ setMessage('Fiche sélectionnée : '+a.label);
+ document.getElementById('recordPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function clearForm(){selectedKey=null;['animalId','name','mother','birth','lastHealth','notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('status').value='Présent';setMessage('Choisissez un animal dans la liste.');}
+document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{
+ activeFilter=btn.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===btn));render();
+}));
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('saveBtn').addEventListener('click',()=>{
+ if(!selectedKey){setMessage('Touchez d’abord une fiche dans la liste.',true);return;}
+ const a=animals.find(x=>x.key===selectedKey);if(!a)return;
+ a.status=document.getElementById('status').value;a.name=document.getElementById('name').value.trim();
+ a.mother=document.getElementById('mother').value.trim();a.birth=document.getElementById('birth').value;
+ a.lastHealth=document.getElementById('lastHealth').value.trim();a.notes=document.getElementById('notes').value.trim();
+ persist();render();setMessage('Fiche enregistrée sur cet appareil.');
+});
+document.getElementById('newBtn').addEventListener('click',clearForm);
+document.getElementById('exportBtn').addEventListener('click',()=>{
+ const blob=new Blob([JSON.stringify(animals,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='sauvegarde-ferme-khaldi.json';a.click();URL.revokeObjectURL(url);setMessage('Export lancé. Vérifiez le dossier Téléchargements/Fichiers.');
+});
+document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{const data=JSON.parse(await file.text());if(!Array.isArray(data)||!data.every(a=>a.key&&a.cat&&a.label))throw new Error('format');
+ animals=data;persist();render();clearForm();setMessage('Sauvegarde importée.');}
+ catch(err){setMessage('Fichier invalide : importation impossible.',true);}e.target.value='';
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+ if(confirm('Remplacer toutes les fiches par les numéros préremplis ? Les informations saisies seront perdues.')){
+   animals=initialAnimals();persist();render();clearForm();setMessage('Fiches préremplies réinitialisées.');
+ }
+});
+load();render();selectAnimal(animals[0].key);
+</script>
+</body>
+</html>
