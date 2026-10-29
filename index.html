@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -34,18 +33,13 @@ label{display:block;font-size:13px;font-weight:bold;margin:9px 0 5px}
 .animal strong{display:block;font-size:15px;margin-bottom:5px}
 .animal span{font-size:12px;color:#465248}
 .animal.selected{outline:2px solid #173b2b;outline-offset:1px}
-.tag{display:inline-block;font-size:11px;border-radius:20px;padding:3px 7px;background:#f1f2ee}
 /* Couleurs de base : lot 1 */
 .yellow{border-left-color:#e7bf19;background:#fffbed}
 .orange{border-left-color:#ef8425;background:#fff4e9}
 .green{border-left-color:#27864d;background:#edf8ef}
 .white{border-left-color:#bfc6c8;background:#fff}
 .blue{border-left-color:#2476ce;background:#edf5ff}
-/* Nouvelle couleur tous les 100 numéros */
-.animal.lot2{border-left-color:#7a3fc4;background:#f4eefc}
-.animal.lot3{border-left-color:#d63b6b;background:#fdeef3}
-.animal.lot4{border-left-color:#0f8f8f;background:#e9f7f7}
-.animal.lot5{border-left-color:#8a5a12;background:#fbf3e3}
+/* Badge du lot */
 .batch-tag{display:inline-block;font-size:10px;border-radius:20px;padding:2px 6px;background:#173b2b;color:#fff;margin-left:4px;vertical-align:middle;font-weight:bold}
 .hidden{display:none!important}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -82,7 +76,7 @@ footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
       <button data-filter="white">⚪ Femelles blanches</button>
       <button data-filter="blue">🔵 Mâles bleus</button>
     </div>
-    <p class="small">Une <strong>nouvelle couleur</strong> apparaît tous les 100 numéros dans chaque catégorie (lot 2 = 101 à 200, lot 3 = 201 à 300…).</p>
+    <p class="small">Une <strong>nouvelle couleur</strong> apparaît tous les 100 numéros (lot 2 = 101–200, lot 3 = 201–300…), jusqu'à l'infini.</p>
     <div id="animalList" class="animal-list"></div>
   </section>
 
@@ -155,7 +149,7 @@ footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
       <button class="danger" id="resetBtn">Réinitialiser les fiches préremplies</button>
       <input id="importFile" type="file" accept=".json,application/json" class="hidden">
     </div>
-    <p class="small">Important : ne supprimez pas les données du navigateur si vous voulez garder les fiches sur cet iPhone. Gardez la même adresse et le même navigateur.</p>
+    <p class="small">Important : ne supprimez pas les données du navigateur si vous voulez garder les fiches sur cet iPhone.</p>
   </section>
 </main>
 <footer>Ferme Khaldi • Version locale • Données conservées sur cet appareil</footer>
@@ -164,7 +158,7 @@ footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
 /* ============================================================
    CATÉGORIES
    count = nombre de fiches préremplies au départ.
-   La couleur change tous les 100 numéros, dans chaque catégorie.
+   Nouvelle couleur tous les 100 numéros, quelle que soit la catégorie.
    ============================================================ */
 const categories = [
   {key:'yellow', label:'Brebis jaune',   prefix:'Jaune',   count:100, kind:'Femelle'},
@@ -175,27 +169,64 @@ const categories = [
 ];
 const STORE = 'fermeKhaldiSheep_v1';
 
-let animals = [];
-let selectedKey = null;
-let activeFilter = 'all';
-let snapshot = '';
-const FIELD_IDS = ['status','name','mother','birth','lastHealth','notes'];
+/* ---------- Palette de couleurs par lot ----------
+   15 teintes bien distinctes, puis génération automatique (angle d'or).
+   Chaque entrée = [couleur foncée (bordure/badge), couleur claire (fond)].
+   ------------------------------------------------------------ */
+const LOT_COLORS = [
+  ['#7a3fc4','#f4eefc'], // 2 : violet
+  ['#d63b6b','#fdeef3'], // 3 : rose
+  ['#0f8f8f','#e9f7f7'], // 4 : turquoise
+  ['#8a5a12','#fbf3e3'], // 5 : brun
+  ['#3346b5','#eceffc'], // 6 : indigo
+  ['#6b7a1a','#f4f6e3'], // 7 : olive
+  ['#a3248f','#fbeaf7'], // 8 : magenta
+  ['#4a5568','#eef0f3'], // 9 : ardoise
+  ['#c0392b','#fceeed'], // 10 : rouge brique
+  ['#1a6b3c','#e8f5ee'], // 11 : vert foncé
+  ['#b8560f','#fdf1e5'], // 12 : orange foncé
+  ['#5b2c83','#f0e8f7'], // 13 : prune
+  ['#0e7490','#e7f4f8'], // 14 : cyan foncé
+  ['#7c6310','#f7f2df'], // 15 : moutarde
+  ['#2b2b2b','#f0f0f0']  // 16 : anthracite
+];
 
-/* ---------- Lots : une nouvelle couleur chaque 100 ---------- */
 function batchFor(cat, n){
   return Math.floor((n - 1) / 100) + 1;
 }
-function lotClass(batch){
-  if(batch <= 1) return '';
-  return ' lot' + (((batch - 2) % 4) + 2); // cycle lot2 → lot5
+/* Renvoie [foncé, clair] pour un lot, ou null pour le lot 1 (couleur de base). */
+function lotColors(batch){
+  if(batch <= 1) return null;
+  const i = batch - 2;
+  if(i < LOT_COLORS.length) return LOT_COLORS[i];
+  // Au-delà de la liste : teinte calculée, toujours différente
+  const h = (i * 137.508) % 360;
+  return [
+    'hsl(' + h.toFixed(0) + ',72%,40%)',
+    'hsl(' + h.toFixed(0) + ',70%,96%)'
+  ];
 }
 function buildLabel(cat, n){
   const c = categories.find(x => x.key === cat);
   const b = batchFor(cat, n);
   return c.label + ' ' + n + (b > 1 ? ' (lot ' + b + ')' : '');
 }
+/* Applique les couleurs inline à un bouton de fiche */
+function styleAnimalButton(el, cat, batch){
+  el.classList.add(cat); // couleur de base (lot 1)
+  const colors = lotColors(batch);
+  if(!colors) return;
+  el.style.borderLeftColor = colors[0];
+  el.style.background = colors[1];
+}
 
 /* ---------- Utilitaires ---------- */
+let animals = [];
+let selectedKey = null;
+let activeFilter = 'all';
+let snapshot = '';
+const FIELD_IDS = ['status','name','mother','birth','lastHealth','notes'];
+
 function keyFor(cat, n){ return cat + '-' + n; }
 function escapeHtml(s){
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -272,8 +303,6 @@ function highlightSelected(){
     b.classList.toggle('selected', b.dataset.key === selectedKey);
   });
 }
-
-/* ---------- Remplir / vider ---------- */
 function fillForm(a){
   selectedKey = a.key;
   document.getElementById('animalId').value = a.label + ' — ' + a.kind;
@@ -287,7 +316,6 @@ function fillForm(a){
   snapshot = formValues();
   highlightSelected();
 }
-
 function selectAnimal(k, scroll){
   const a = animals.find(x => x.key === k);
   if(!a){
@@ -308,7 +336,6 @@ function selectAnimal(k, scroll){
     }
   }
 }
-
 function clearForm(){
   if(selectedKey !== null && isDirty()
      && !confirm('Modifications non enregistrées. Vider quand même ?')){
@@ -335,7 +362,6 @@ function visibleAnimals(){
     return norm([a.label, a.name, a.mother, a.notes, a.status, a.lastHealth].join(' ')).includes(q);
   });
 }
-
 function render(){
   const list = document.getElementById('animalList');
   list.innerHTML = '';
@@ -345,9 +371,14 @@ function render(){
   visible.forEach(a => {
     const batch = a.batch || batchFor(a.cat, a.number || 1);
     const b = document.createElement('button');
-    b.className = 'animal ' + a.cat + lotClass(batch) + (a.key === selectedKey ? ' selected' : '');
+    b.className = 'animal' + (a.key === selectedKey ? ' selected' : '');
     b.dataset.key = a.key;
-    const tag = batch > 1 ? ' <span class="batch-tag">lot ' + batch + '</span>' : '';
+    styleAnimalButton(b, a.cat, batch);
+
+    const colors = lotColors(batch);
+    const tag = batch > 1
+      ? ' <span class="batch-tag" style="background:' + colors[0] + '">lot ' + batch + '</span>'
+      : '';
     b.innerHTML =
       '<strong>' + escapeHtml(a.label) + tag + '</strong>' +
       '<span>' + escapeHtml(a.status) + (a.name ? ' • ' + escapeHtml(a.name) : '') + '</span>';
@@ -397,7 +428,7 @@ document.querySelectorAll('[data-filter]').forEach(btn => {
   });
 });
 
-/* ---------- Charger une fiche existante ---------- */
+/* ---------- Charger ---------- */
 document.getElementById('loadBtn').addEventListener('click', () => {
   const k = numberToKey();
   if(!k) return;
@@ -409,23 +440,18 @@ document.getElementById('loadBtn').addEventListener('click', () => {
   selectAnimal(k);
 });
 
-/* ---------- Créer un nouvel animal ---------- */
+/* ---------- Créer ---------- */
 document.getElementById('createBtn').addEventListener('click', () => {
   const k = numberToKey();
   if(!k) return;
-
   if(animals.some(x => x.key === k)){
-    if(confirm('L’animal « ' + k + ' » existe déjà. Le charger ?')){
-      selectAnimal(k);
-    }
+    if(confirm('L’animal « ' + k + ' » existe déjà. Le charger ?')) selectAnimal(k);
     return;
   }
-
   if(selectedKey !== null && isDirty()
      && !confirm('Modifications non enregistrées sur la fiche en cours. Créer quand même ?')){
     return;
   }
-
   const parts = k.split('-');
   const cat = parts[0];
   const n = parseInt(parts[1], 10);
@@ -446,7 +472,6 @@ document.getElementById('createBtn').addEventListener('click', () => {
     lastHealth: '',
     notes: ''
   });
-
   persist();
   render();
   fillForm(animals.find(x => x.key === k));
@@ -517,7 +542,6 @@ document.getElementById('exportBtn').addEventListener('click', () => {
 document.getElementById('importBtn').addEventListener('click', () => {
   document.getElementById('importFile').click();
 });
-
 document.getElementById('importFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
