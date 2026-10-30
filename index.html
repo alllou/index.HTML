@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#173b2b">
-<title>Ferme Khaldi v2.1</title>
+<title>Ferme Khaldi v2.2</title>
 <style>
 :root{--green:#173b2b;--cream:#f6f4ec;--line:#d8ded7;--ink:#202820}
 *{box-sizing:border-box}
@@ -14,12 +14,9 @@ h1{font-size:22px;margin:0 0 5px}
 header p{margin:0;font-size:13px;opacity:.9}
 .badge-version{display:inline-block;background:#e7bf19;color:#173b2b;font-weight:bold;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
 main{max-width:900px;margin:auto;padding:14px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
-.stat strong{display:block;font-size:23px}
-.stat span{font-size:12px;color:#536052}
 .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
 h2{font-size:17px;margin:0 0 12px}
+h3{font-size:14px;margin:16px 0 8px}
 .filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
 button,.tab{font:inherit;border:0;border-radius:9px;padding:10px 12px;background:#e9eee8;color:#203426;cursor:pointer}
 button.primary{background:var(--green);color:#fff}
@@ -50,28 +47,94 @@ label{display:block;font-size:13px;font-weight:bold;margin:9px 0 5px}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 #message{min-height:18px;font-size:13px;color:#1e6a38;margin-top:8px}
 footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
-@media(max-width:520px){
-  .stats{grid-template-columns:repeat(3,1fr)}
-  .stat{padding:9px 4px}
-  .stat strong{font-size:19px}
-  .formgrid{grid-template-columns:1fr}
-}
+.home-card{background:#fff;border:1px solid #d8ded7;border-radius:12px;padding:14px 10px;text-align:center}
+.home-action{border:0;border-radius:14px;padding:16px 10px;text-align:center;cursor:pointer;min-height:110px;font-family:inherit}
+.home-action:active{transform:scale(0.97)}
+.cat-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid #d8ded7;background:#fff}
+.cat-row .dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 1px #ccc}
+.cat-row .info{flex:1;font-size:13px;line-height:1.3}
+.cat-row .info strong{display:block;font-size:13px}
+.cat-row .info small{color:#5c685d;font-size:11px}
+.cat-row .count{text-align:right;font-size:13px;font-weight:bold}
+.cat-row .count small{display:block;font-size:10px;color:#5c685d;font-weight:normal}
+.sex-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:bold;vertical-align:middle}
+.sex-F{background:#fdeee6;color:#b8560f}
+.sex-M{background:#e6f0fc;color:#1a4a8a}
+.sex-J{background:#f0e8f7;color:#5b2c83}
+.back-home{display:inline-block;padding:8px 12px;background:#e9eee8;color:#173b2b;border-radius:9px;font-size:13px;text-decoration:none;margin-bottom:12px;cursor:pointer;border:0;font-family:inherit}
+@media(max-width:520px){.formgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
-  <h1>🐑 Ferme Khaldi <span class="badge-version">v2.1</span></h1>
+  <h1>🐑 Ferme Khaldi <span class="badge-version">v2.2</span></h1>
   <p>Gestion du troupeau — données conservées sur cet appareil</p>
 </header>
 <main>
-  <div class="stats">
-    <div class="stat"><strong id="totalCount">0</strong><span>Fiches</span></div>
-    <div class="stat"><strong id="presentCount">0</strong><span>Présents</span></div>
-    <div class="stat"><strong id="youngCount">0</strong><span>Femelles blanches</span></div>
-  </div>
 
-  <section class="panel">
-    <h2>1. Rechercher et choisir une catégorie</h2>
+  <!-- ==================== ACCUEIL ==================== -->
+  <section class="panel" id="homePanel">
+    <h2 style="text-align:center;font-size:19px;margin-bottom:4px">Bienvenue à la ferme 🐑</h2>
+    <p class="small" style="text-align:center;margin:0 0 16px" id="todayDate">—</p>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px">
+      <div class="home-card">
+        <strong id="totalCount" style="display:block;font-size:28px;color:#173b2b">0</strong>
+        <span style="font-size:12px;color:#536052">Fiches totales</span>
+      </div>
+      <div class="home-card">
+        <strong id="presentCount" style="display:block;font-size:28px;color:#27864d">0</strong>
+        <span style="font-size:12px;color:#536052">Présents</span>
+      </div>
+      <div class="home-card">
+        <strong id="femalesCount" style="display:block;font-size:28px;color:#ef8425">0</strong>
+        <span style="font-size:12px;color:#536052">♀ Femelles</span>
+      </div>
+      <div class="home-card">
+        <strong id="malesCount" style="display:block;font-size:28px;color:#2476ce">0</strong>
+        <span style="font-size:12px;color:#536052">♂ Mâles</span>
+      </div>
+      <div class="home-card">
+        <strong id="youngCount" style="display:block;font-size:28px;color:#7a3fc4">0</strong>
+        <span style="font-size:12px;color:#536052">🐣 Nouveaux nés</span>
+      </div>
+      <div class="home-card">
+        <strong id="missingCount" style="display:block;font-size:28px;color:#a52c1d">0</strong>
+        <span style="font-size:12px;color:#536052">Vendus / morts</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px">
+      <button class="home-action" data-go="fichesPanel" style="background:#173b2b;color:#fff">
+        <span style="font-size:26px;display:block;margin-bottom:4px">🔍</span>
+        <strong style="display:block;font-size:14px">Consulter / modifier</strong>
+        <span style="font-size:11px;opacity:.85">Charger une fiche</span>
+      </button>
+      <button class="home-action" data-go="fichesPanel" data-focus="numInput" style="background:#27864d;color:#fff">
+        <span style="font-size:26px;display:block;margin-bottom:4px">➕</span>
+        <strong style="display:block;font-size:14px">Ajouter un animal</strong>
+        <span style="font-size:11px;opacity:.85">Créer une fiche</span>
+      </button>
+      <button class="home-action" data-go="palettePanel" style="background:#7a3fc4;color:#fff">
+        <span style="font-size:26px;display:block;margin-bottom:4px">🎨</span>
+        <strong style="display:block;font-size:14px">Couleurs des lots</strong>
+        <span style="font-size:11px;opacity:.85">Personnaliser</span>
+      </button>
+      <button class="home-action" data-go="backupPanel" style="background:#b8560f;color:#fff">
+        <span style="font-size:26px;display:block;margin-bottom:4px">💾</span>
+        <strong style="display:block;font-size:14px">Sauvegarde</strong>
+        <span style="font-size:11px;opacity:.85">Exporter / importer</span>
+      </button>
+    </div>
+
+    <h3>Effectif par couleur</h3>
+    <div id="homeCategories" style="display:flex;flex-direction:column;gap:6px"></div>
+  </section>
+
+  <!-- ==================== FICHES ==================== -->
+  <section class="panel hidden" id="fichesPanel">
+    <button class="back-home" data-back>← Accueil</button>
+    <h2>1. Rechercher et choisir une fiche</h2>
     <input id="search" type="search" placeholder="Rechercher un numéro, une mère, une note…">
     <div class="filters" style="margin-top:10px">
       <button class="active" data-filter="all">Tous</button>
@@ -81,73 +144,75 @@ footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
       <button data-filter="white">⚪ Femelles blanches</button>
       <button data-filter="blue">🔵 Mâles bleus</button>
     </div>
-    <p class="small">Une <strong>nouvelle couleur</strong> apparaît tous les 100 numéros. Modifiable dans la section 🎨 en bas.</p>
+    <p class="small">Une <strong>nouvelle couleur</strong> apparaît tous les 100 numéros.</p>
     <div id="animalList" class="animal-list"></div>
+
+    <div id="recordPanel" style="margin-top:18px;padding-top:14px;border-top:1px solid #e3e8e2">
+      <h2>2. Fiche de l’animal</h2>
+      <div class="formgrid">
+        <div>
+          <label for="catSelect">Catégorie</label>
+          <select id="catSelect">
+            <option value="">— Choisir —</option>
+            <option value="yellow">🟡 Brebis jaune</option>
+            <option value="orange">🟠 Brebis orange</option>
+            <option value="green">🟢 Brebis verte</option>
+            <option value="white">⚪ Femelle blanche</option>
+            <option value="blue">🔵 Mâle bleu</option>
+          </select>
+        </div>
+        <div>
+          <label for="numInput">Numéro</label>
+          <input id="numInput" type="number" min="1" max="9999" inputmode="numeric" placeholder="Ex. 42">
+        </div>
+        <div style="grid-column:1/-1">
+          <label for="animalId">Fiche affichée</label>
+          <input id="animalId" readonly>
+        </div>
+        <div>
+          <label for="status">Statut</label>
+          <select id="status">
+            <option>Présent</option>
+            <option>Vendu</option>
+            <option>Mort</option>
+            <option>Absent</option>
+          </select>
+        </div>
+        <div>
+          <label for="name">Nom (facultatif)</label>
+          <input id="name" placeholder="Nom de l’animal">
+        </div>
+        <div>
+          <label for="mother">Numéro de la mère</label>
+          <input id="mother" placeholder="Ex. Brebis verte 12">
+        </div>
+        <div>
+          <label for="birth">Date de naissance</label>
+          <input id="birth" type="date">
+        </div>
+        <div>
+          <label for="lastHealth">Dernier soin / vaccin</label>
+          <input id="lastHealth" placeholder="Produit et date">
+        </div>
+      </div>
+      <label for="notes">Observations</label>
+      <textarea id="notes" rows="3" placeholder="Gestation, mise bas, santé, traitement, poids…"></textarea>
+      <div class="actions">
+        <button class="primary" id="saveBtn">Enregistrer la fiche</button>
+        <button id="loadBtn">Charger la fiche</button>
+        <button id="createBtn">➕ Créer cet animal</button>
+        <button class="danger" id="deleteBtn">🗑 Supprimer</button>
+        <button id="newBtn">Vider</button>
+      </div>
+      <div id="message" role="status" aria-live="polite"></div>
+    </div>
   </section>
 
-  <section class="panel" id="recordPanel">
-    <h2>2. Fiche de l’animal</h2>
-    <div class="formgrid">
-      <div>
-        <label for="catSelect">Catégorie</label>
-        <select id="catSelect">
-          <option value="">— Choisir —</option>
-          <option value="yellow">🟡 Brebis jaune</option>
-          <option value="orange">🟠 Brebis orange</option>
-          <option value="green">🟢 Brebis verte</option>
-          <option value="white">⚪ Femelle blanche</option>
-          <option value="blue">🔵 Mâle bleu</option>
-        </select>
-      </div>
-      <div>
-        <label for="numInput">Numéro</label>
-        <input id="numInput" type="number" min="1" max="9999" inputmode="numeric" placeholder="Ex. 42">
-      </div>
-      <div style="grid-column:1/-1">
-        <label for="animalId">Fiche affichée</label>
-        <input id="animalId" readonly>
-      </div>
-      <div>
-        <label for="status">Statut</label>
-        <select id="status">
-          <option>Présent</option>
-          <option>Vendu</option>
-          <option>Mort</option>
-          <option>Absent</option>
-        </select>
-      </div>
-      <div>
-        <label for="name">Nom (facultatif)</label>
-        <input id="name" placeholder="Nom de l’animal">
-      </div>
-      <div>
-        <label for="mother">Numéro de la mère</label>
-        <input id="mother" placeholder="Ex. Brebis verte 12">
-      </div>
-      <div>
-        <label for="birth">Date de naissance</label>
-        <input id="birth" type="date">
-      </div>
-      <div>
-        <label for="lastHealth">Dernier soin / vaccin</label>
-        <input id="lastHealth" placeholder="Produit et date">
-      </div>
-    </div>
-    <label for="notes">Observations</label>
-    <textarea id="notes" rows="3" placeholder="Gestation, mise bas, santé, traitement, poids…"></textarea>
-    <div class="actions">
-      <button class="primary" id="saveBtn">Enregistrer la fiche</button>
-      <button id="loadBtn">Charger la fiche</button>
-      <button id="createBtn">➕ Créer cet animal</button>
-      <button class="danger" id="deleteBtn">🗑 Supprimer</button>
-      <button id="newBtn">Vider</button>
-    </div>
-    <div id="message" role="status" aria-live="polite"></div>
-  </section>
-
-  <section class="panel" id="palettePanel">
+  <!-- ==================== PALETTE ==================== -->
+  <section class="panel hidden" id="palettePanel">
+    <button class="back-home" data-back>← Accueil</button>
     <h2>🎨 Couleurs des lots</h2>
-    <p class="small">Chaque lot a sa couleur. <strong>Touchez la pastille</strong> pour changer la couleur, ou <strong>➕ Ajouter une couleur</strong> pour en créer une nouvelle. Autant que vous voulez.</p>
+    <p class="small">Touchez la pastille pour changer une couleur, ou <strong>➕ Ajouter une couleur</strong> pour en créer une nouvelle. Autant que vous voulez.</p>
     <div id="paletteList"></div>
     <div class="actions">
       <button id="addColorBtn">➕ Ajouter une couleur</button>
@@ -156,8 +221,10 @@ footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
     <p class="small" id="paletteInfo"></p>
   </section>
 
-  <section class="panel">
-    <h2>3. Sauvegarde des données</h2>
+  <!-- ==================== SAUVEGARDE ==================== -->
+  <section class="panel hidden" id="backupPanel">
+    <button class="back-home" data-back>← Accueil</button>
+    <h2>💾 Sauvegarde des données</h2>
     <p class="small">Les changements sont enregistrés dans le stockage local de ce navigateur. Exportez régulièrement une copie JSON.</p>
     <div class="actions">
       <button class="primary" id="exportBtn">Exporter la sauvegarde</button>
@@ -167,36 +234,31 @@ footer{text-align:center;color:#697269;font-size:12px;padding:10px 15px 25px}
     </div>
     <p class="small">Important : ne supprimez pas les données du navigateur si vous voulez garder les fiches sur cet iPhone.</p>
   </section>
+
 </main>
-<footer>Ferme Khaldi • v2.1 • Données conservées sur cet appareil</footer>
+<footer>Ferme Khaldi • v2.2 • Données conservées sur cet appareil</footer>
 
 <script>
 const categories = [
-  {key:'yellow', label:'Brebis jaune',   prefix:'Jaune',   count:100, kind:'Femelle'},
-  {key:'orange', label:'Brebis orange',  prefix:'Orange',  count:100, kind:'Femelle'},
-  {key:'green',  label:'Brebis verte',   prefix:'Verte',   count:100, kind:'Femelle'},
-  {key:'white',  label:'Femelle blanche',prefix:'Blanche', count:20,  kind:'Jeune femelle'},
+  {key:'yellow', label:'Brebis jaune',   prefix:'Jaune',   count:100, kind:'Femelle adulte'},
+  {key:'orange', label:'Brebis orange',  prefix:'Orange',  count:100, kind:'Femelle adulte'},
+  {key:'green',  label:'Brebis verte',   prefix:'Verte',   count:100, kind:'Femelle adulte'},
+  {key:'white',  label:'Femelle blanche',prefix:'Blanche', count:20,  kind:'Nouveau-né'},
   {key:'blue',   label:'Mâle bleu',      prefix:'Bleu',    count:65,  kind:'Mâle'}
 ];
+const CAT_TYPE  = { yellow:'F', orange:'F', green:'F', white:'J', blue:'M' };
+const CAT_COLORS = { yellow:'#e7bf19', orange:'#ef8425', green:'#27864d', white:'#bfc6c8', blue:'#2476ce' };
+const TYPE_LABEL = { F:'♀ Femelle', M:'♂ Mâle', J:'🐣 Nouveau-né' };
+
 const STORE = 'fermeKhaldiSheep_v1';
 const PALETTE_STORE = 'fermeKhaldiPalette_v1';
 
 const DEFAULT_PALETTE = [
-  ['#7a3fc4','#f4eefc'],
-  ['#d63b6b','#fdeef3'],
-  ['#0f8f8f','#e9f7f7'],
-  ['#8a5a12','#fbf3e3'],
-  ['#3346b5','#eceffc'],
-  ['#6b7a1a','#f4f6e3'],
-  ['#a3248f','#fbeaf7'],
-  ['#4a5568','#eef0f3'],
-  ['#c0392b','#fceeed'],
-  ['#1a6b3c','#e8f5ee'],
-  ['#b8560f','#fdf1e5'],
-  ['#5b2c83','#f0e8f7'],
-  ['#0e7490','#e7f4f8'],
-  ['#7c6310','#f7f2df'],
-  ['#2b2b2b','#f0f0f0']
+  ['#7a3fc4','#f4eefc'], ['#d63b6b','#fdeef3'], ['#0f8f8f','#e9f7f7'],
+  ['#8a5a12','#fbf3e3'], ['#3346b5','#eceffc'], ['#6b7a1a','#f4f6e3'],
+  ['#a3248f','#fbeaf7'], ['#4a5568','#eef0f3'], ['#c0392b','#fceeed'],
+  ['#1a6b3c','#e8f5ee'], ['#b8560f','#fdf1e5'], ['#5b2c83','#f0e8f7'],
+  ['#0e7490','#e7f4f8'], ['#7c6310','#f7f2df'], ['#2b2b2b','#f0f0f0']
 ];
 
 let palette = [];
@@ -206,138 +268,77 @@ let activeFilter = 'all';
 let snapshot = '';
 const FIELD_IDS = ['status','name','mother','birth','lastHealth','notes'];
 
+/* ---------- Utilitaires ---------- */
+function keyFor(cat,n){ return cat+'-'+n; }
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function norm(s){ return String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function setMessage(msg,error){
+  const el = document.getElementById('message');
+  el.textContent = msg;
+  el.style.color = error ? '#a52c1d' : '#1e6a38';
+}
+
+/* ---------- Palette ---------- */
 function loadPalette(){
-  try{
-    const raw = localStorage.getItem(PALETTE_STORE);
-    if(raw){ const p = JSON.parse(raw); if(Array.isArray(p)) return p; }
-  }catch(e){}
+  try{ const r = localStorage.getItem(PALETTE_STORE); if(r){ const p = JSON.parse(r); if(Array.isArray(p)) return p; } }catch(e){}
   return DEFAULT_PALETTE.slice();
 }
 function savePalette(){ try{ localStorage.setItem(PALETTE_STORE, JSON.stringify(palette)); }catch(e){} }
-function batchFor(cat, n){ return Math.floor((n - 1) / 100) + 1; }
-function lotColors(batch){
-  if(batch <= 1) return null;
-  const i = batch - 2;
+function batchFor(cat,n){ return Math.floor((n-1)/100)+1; }
+function lotColors(b){
+  if(b<=1) return null;
+  const i = b-2;
   if(i < palette.length) return palette[i];
-  const h = (i * 137.508) % 360;
-  return ['hsl(' + h.toFixed(0) + ',72%,40%)', 'hsl(' + h.toFixed(0) + ',70%,96%)'];
+  const h = (i*137.508)%360;
+  return ['hsl('+h.toFixed(0)+',72%,40%)','hsl('+h.toFixed(0)+',70%,96%)'];
 }
-function buildLabel(cat, n){
+function buildLabel(cat,n){
   const c = categories.find(x => x.key === cat);
-  const b = batchFor(cat, n);
-  return c.label + ' ' + n + (b > 1 ? ' (lot ' + b + ')' : '');
+  const b = batchFor(cat,n);
+  return c.label+' '+n+(b>1?' (lot '+b+')':'');
 }
-function styleAnimalButton(el, cat, batch){
+function styleAnimalButton(el,cat,batch){
   el.classList.add(cat);
   const colors = lotColors(batch);
   if(!colors) return;
   el.style.borderLeftColor = colors[0];
   el.style.background = colors[1];
 }
-function hexToRgb(hex){
-  const m = String(hex).match(/^#?([0-9a-f]{6})$/i);
-  if(!m) return null;
-  const n = parseInt(m[1], 16);
-  return {r:(n>>16)&255, g:(n>>8)&255, b:n&255};
+function hexToRgb(h){
+  const m = String(h).match(/^#?([0-9a-f]{6})$/i); if(!m) return null;
+  const n = parseInt(m[1],16); return {r:(n>>16)&255,g:(n>>8)&255,b:n&255};
 }
-function lighten(hex){
-  const c = hexToRgb(hex);
-  if(!c) return '#f4eefc';
-  const m = v => Math.round(v + (255 - v) * 0.88);
-  return '#' + [m(c.r), m(c.g), m(c.b)].map(x => x.toString(16).padStart(2, '0')).join('');
+function lighten(h){
+  const c = hexToRgb(h); if(!c) return '#f4eefc';
+  const m = v => Math.round(v+(255-v)*0.88);
+  return '#'+[m(c.r),m(c.g),m(c.b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 }
-function hslToHex(h, s, l){
-  s /= 100; l /= 100;
-  const a = s * Math.min(l, 1 - l);
+function hslToHex(h,s,l){
+  s/=100; l/=100;
+  const a = s*Math.min(l,1-l);
   const f = n => {
-    const k = (n + h / 30) % 12;
-    const c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
-    return Math.round(255 * c).toString(16).padStart(2, '0');
+    const k = (n+h/30)%12;
+    const c = l - a*Math.max(-1,Math.min(k-3,9-k,1));
+    return Math.round(255*c).toString(16).padStart(2,'0');
   };
-  return '#' + f(0) + f(8) + f(4);
+  return '#'+f(0)+f(8)+f(4);
 }
-function randomDarkHex(){
-  const h = Math.floor(Math.random() * 360);
-  return hslToHex(h, 72, 40);
-}
+function randomDarkHex(){ return hslToHex(Math.floor(Math.random()*360),72,40); }
 
-function renderPalette(){
-  const list = document.getElementById('paletteList');
-  list.innerHTML = '';
-  if(!palette.length){
-    list.innerHTML = '<p class="small">Aucune couleur personnalisée. Les lots prendront des teintes générées automatiquement.</p>';
-  }
-  palette.forEach((pair, i) => {
-    const lotNum = i + 2;
-    const start = (lotNum - 1) * 100 + 1;
-    const end = lotNum * 100;
-    const row = document.createElement('div');
-    row.className = 'palette-row';
-    const swatch = document.createElement('div');
-    swatch.className = 'palette-swatch';
-    swatch.style.borderColor = pair[0];
-    swatch.style.background = pair[1];
-    const label = document.createElement('div');
-    label.className = 'palette-label';
-    label.innerHTML = '<strong>Lot ' + lotNum + '</strong><small>numéros ' + start + ' à ' + end + '</small>';
-    const input = document.createElement('input');
-    input.type = 'color';
-    input.className = 'palette-input';
-    input.value = /^#[0-9a-f]{6}$/i.test(pair[0]) ? pair[0] : randomDarkHex();
-    input.addEventListener('input', () => {
-      const hex = input.value;
-      palette[i] = [hex, lighten(hex)];
-      savePalette();
-      swatch.style.borderColor = hex;
-      swatch.style.background = lighten(hex);
-      render();
-    });
-    const del = document.createElement('button');
-    del.className = 'palette-del';
-    del.textContent = '🗑';
-    del.title = 'Supprimer cette couleur';
-    del.addEventListener('click', () => {
-      if(!confirm('Supprimer la couleur du lot ' + lotNum + ' ? Les fiches de ce lot prendront une couleur générée automatiquement.')) return;
-      palette.splice(i, 1);
-      savePalette();
-      renderPalette();
-      render();
-    });
-    row.appendChild(swatch);
-    row.appendChild(label);
-    row.appendChild(input);
-    row.appendChild(del);
-    list.appendChild(row);
-  });
-  document.getElementById('paletteInfo').textContent =
-    palette.length + ' couleur(s) définie(s). Les lots au-delà utilisent des teintes générées automatiquement.';
-}
-
-function keyFor(cat, n){ return cat + '-' + n; }
-function escapeHtml(s){
-  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function norm(s){ return String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
-function setMessage(msg, error){
-  const el = document.getElementById('message');
-  el.textContent = msg;
-  el.style.color = error ? '#a52c1d' : '#1e6a38';
-}
-
+/* ---------- Données ---------- */
 function initialAnimals(){
   const a = [];
   categories.forEach(c => {
-    for(let n = 1; n <= c.count; n++){
-      a.push({
-        key: keyFor(c.key, n), cat: c.key, number: n,
-        label: buildLabel(c.key, n), kind: c.kind, batch: batchFor(c.key, n),
-        status: 'Présent', name: '', mother: '', birth: '', lastHealth: '', notes: ''
-      });
+    for(let n=1; n<=c.count; n++){
+      a.push({ key:keyFor(c.key,n), cat:c.key, number:n,
+        label:buildLabel(c.key,n), kind:c.kind, batch:batchFor(c.key,n),
+        status:'Présent', name:'', mother:'', birth:'', lastHealth:'', notes:'' });
     }
   });
   return a;
 }
-
 function persist(){
   try{ localStorage.setItem(STORE, JSON.stringify(animals)); }
   catch(e){ setMessage('Stockage indisponible : exportez vos données.', true); }
@@ -345,15 +346,13 @@ function persist(){
 function load(){
   try{
     const raw = localStorage.getItem(STORE);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      if(Array.isArray(parsed) && parsed.length){ animals = parsed; return; }
-    }
+    if(raw){ const p = JSON.parse(raw); if(Array.isArray(p) && p.length){ animals = p; return; } }
   }catch(e){}
   animals = initialAnimals();
   persist();
 }
 
+/* ---------- Formulaire ---------- */
 function formValues(){ return FIELD_IDS.map(id => document.getElementById(id).value).join('\u0001'); }
 function isDirty(){ return selectedKey !== null && formValues() !== snapshot; }
 function syncNumberFields(a){
@@ -361,11 +360,11 @@ function syncNumberFields(a){
   document.getElementById('numInput').value = a.number;
 }
 function highlightSelected(){
-  document.querySelectorAll('.animal').forEach(b => { b.classList.toggle('selected', b.dataset.key === selectedKey); });
+  document.querySelectorAll('.animal').forEach(b => b.classList.toggle('selected', b.dataset.key === selectedKey));
 }
 function fillForm(a){
   selectedKey = a.key;
-  document.getElementById('animalId').value = a.label + ' — ' + a.kind;
+  document.getElementById('animalId').value = a.label+' — '+a.kind;
   document.getElementById('status').value = a.status || 'Présent';
   document.getElementById('name').value = a.name || '';
   document.getElementById('mother').value = a.mother || '';
@@ -382,18 +381,18 @@ function selectAnimal(k, scroll){
   if(selectedKey !== null && k !== selectedKey && isDirty()
      && !confirm('Modifications non enregistrées. Continuer ?')) return;
   fillForm(a);
-  setMessage('Fiche sélectionnée : ' + a.label);
+  setMessage('Fiche sélectionnée : '+a.label);
   if(scroll !== false){
     const p = document.getElementById('recordPanel');
     const r = p.getBoundingClientRect();
-    if(r.top < 0 || r.top > window.innerHeight * 0.5) p.scrollIntoView({block:'start'});
+    if(r.top < 0 || r.top > window.innerHeight*0.5) p.scrollIntoView({block:'start'});
   }
 }
 function clearForm(){
   if(selectedKey !== null && isDirty()
      && !confirm('Modifications non enregistrées. Vider quand même ?')) return;
   selectedKey = null;
-  ['animalId','name','mother','birth','lastHealth','notes'].forEach(id => { document.getElementById(id).value = ''; });
+  ['animalId','name','mother','birth','lastHealth','notes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('status').value = 'Présent';
   document.getElementById('catSelect').value = '';
   document.getElementById('numInput').value = '';
@@ -402,12 +401,13 @@ function clearForm(){
   setMessage('Choisissez un animal ou saisissez un numéro.');
 }
 
+/* ---------- Rendu fiches ---------- */
 function visibleAnimals(){
   const q = norm(document.getElementById('search').value.trim());
   return animals.filter(a => {
     if(activeFilter !== 'all' && a.cat !== activeFilter) return false;
     if(!q) return true;
-    return norm([a.label, a.name, a.mother, a.notes, a.status, a.lastHealth].join(' ')).includes(q);
+    return norm([a.label,a.name,a.mother,a.notes,a.status,a.lastHealth].join(' ')).includes(q);
   });
 }
 function render(){
@@ -418,33 +418,131 @@ function render(){
   visible.forEach(a => {
     const batch = a.batch || batchFor(a.cat, a.number || 1);
     const b = document.createElement('button');
-    b.className = 'animal' + (a.key === selectedKey ? ' selected' : '');
+    b.className = 'animal'+(a.key === selectedKey ? ' selected' : '');
     b.dataset.key = a.key;
     styleAnimalButton(b, a.cat, batch);
     const colors = lotColors(batch);
-    const tag = (batch > 1 && colors)
-      ? ' <span class="batch-tag" style="background:' + colors[0] + '">lot ' + batch + '</span>'
-      : '';
-    b.innerHTML = '<strong>' + escapeHtml(a.label) + tag + '</strong>'
-                + '<span>' + escapeHtml(a.status) + (a.name ? ' • ' + escapeHtml(a.name) : '') + '</span>';
+    const tag = (batch>1 && colors)
+      ? ' <span class="batch-tag" style="background:'+colors[0]+'">lot '+batch+'</span>' : '';
+    b.innerHTML = '<strong>'+escapeHtml(a.label)+tag+'</strong>'
+                + '<span>'+escapeHtml(a.status)+(a.name?' • '+escapeHtml(a.name):'')+'</span>';
     b.addEventListener('click', () => selectAnimal(a.key));
     frag.appendChild(b);
   });
   list.appendChild(frag);
   if(!visible.length) list.innerHTML = '<p>Aucun animal trouvé.</p>';
-  document.getElementById('totalCount').textContent = animals.length;
-  document.getElementById('presentCount').textContent = animals.filter(a => a.status === 'Présent').length;
-  document.getElementById('youngCount').textContent = animals.filter(a => a.cat === 'white' && a.status === 'Présent').length;
+  renderHome();
 }
 
+/* ---------- Rendu accueil ---------- */
+function renderHome(){
+  const d = new Date();
+  const jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+  const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const dt = document.getElementById('todayDate');
+  if(dt) dt.textContent = jours[d.getDay()]+' '+d.getDate()+' '+mois[d.getMonth()]+' '+d.getFullYear();
+
+  const presents = animals.filter(a => a.status === 'Présent');
+  const females  = presents.filter(a => CAT_TYPE[a.cat] === 'F').length;
+  const males    = presents.filter(a => CAT_TYPE[a.cat] === 'M').length;
+  const young    = presents.filter(a => CAT_TYPE[a.cat] === 'J').length;
+  const missing  = animals.filter(a => a.status === 'Vendu' || a.status === 'Mort').length;
+
+  const set = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+  set('totalCount', animals.length);
+  set('presentCount', presents.length);
+  set('femalesCount', females);
+  set('malesCount', males);
+  set('youngCount', young);
+  set('missingCount', missing);
+
+  const box = document.getElementById('homeCategories');
+  if(!box) return;
+  box.innerHTML = '';
+  categories.forEach(c => {
+    const list = animals.filter(a => a.cat === c.key);
+    const nb = list.filter(a => a.status === 'Présent').length;
+    const type = CAT_TYPE[c.key];
+    const row = document.createElement('div');
+    row.className = 'cat-row';
+    row.innerHTML =
+      '<span class="dot" style="background:'+CAT_COLORS[c.key]+'"></span>'+
+      '<div class="info"><strong>'+c.label+
+        ' <span class="sex-badge sex-'+type+'">'+TYPE_LABEL[type]+'</span></strong>'+
+        '<small>'+c.kind+'</small></div>'+
+      '<div class="count">'+nb+'<small>sur '+list.length+'</small></div>';
+    box.appendChild(row);
+  });
+}
+
+/* ---------- Palette : rendu ---------- */
+function renderPalette(){
+  const list = document.getElementById('paletteList');
+  list.innerHTML = '';
+  if(!palette.length){
+    list.innerHTML = '<p class="small">Aucune couleur personnalisée.</p>';
+  }
+  palette.forEach((pair, i) => {
+    const lotNum = i+2, start = (lotNum-1)*100+1, end = lotNum*100;
+    const row = document.createElement('div');
+    row.className = 'palette-row';
+    const sw = document.createElement('div');
+    sw.className = 'palette-swatch';
+    sw.style.borderColor = pair[0];
+    sw.style.background = pair[1];
+    const lab = document.createElement('div');
+    lab.className = 'palette-label';
+    lab.innerHTML = '<strong>Lot '+lotNum+'</strong><small>numéros '+start+' à '+end+'</small>';
+    const inp = document.createElement('input');
+    inp.type = 'color';
+    inp.className = 'palette-input';
+    inp.value = /^#[0-9a-f]{6}$/i.test(pair[0]) ? pair[0] : randomDarkHex();
+    inp.addEventListener('input', () => {
+      const hex = inp.value;
+      palette[i] = [hex, lighten(hex)];
+      savePalette();
+      sw.style.borderColor = hex;
+      sw.style.background = lighten(hex);
+      render();
+    });
+    const del = document.createElement('button');
+    del.className = 'palette-del';
+    del.textContent = '🗑';
+    del.addEventListener('click', () => {
+      if(!confirm('Supprimer la couleur du lot '+lotNum+' ?')) return;
+      palette.splice(i,1);
+      savePalette(); renderPalette(); render();
+    });
+    row.appendChild(sw); row.appendChild(lab); row.appendChild(inp); row.appendChild(del);
+    list.appendChild(row);
+  });
+  document.getElementById('paletteInfo').textContent =
+    palette.length+' couleur(s) définie(s). Les lots au-delà utilisent des teintes générées automatiquement.';
+}
+
+/* ---------- Navigation ---------- */
+const PANELS = ['homePanel','fichesPanel','palettePanel','backupPanel'];
+function showPanel(id){
+  PANELS.forEach(p => {
+    const el = document.getElementById(p);
+    if(el) el.classList.toggle('hidden', p !== id);
+  });
+  window.scrollTo(0,0);
+  if(id === 'homePanel')   renderHome();
+  if(id === 'fichesPanel') render();
+  if(id === 'palettePanel') renderPalette();
+}
+
+/* ---------- Catégorie + numéro ---------- */
 function numberToKey(){
   const cat = document.getElementById('catSelect').value;
   const n = parseInt(document.getElementById('numInput').value, 10);
   if(!cat){ setMessage('Choisissez d’abord une catégorie.', true); return null; }
-  if(!Number.isFinite(n) || n < 1 || n > 9999){ setMessage('Numéro entre 1 et 9999.', true); return null; }
-  return cat + '-' + n;
+  if(!Number.isFinite(n) || n<1 || n>9999){ setMessage('Numéro entre 1 et 9999.', true); return null; }
+  return cat+'-'+n;
 }
 
+/* ---------- Écouteurs ---------- */
 let searchTimer;
 document.getElementById('search').addEventListener('input', () => {
   clearTimeout(searchTimer);
@@ -457,29 +555,47 @@ document.querySelectorAll('[data-filter]').forEach(btn => {
     render();
   });
 });
+document.querySelectorAll('[data-go]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    showPanel(btn.dataset.go);
+    if(btn.dataset.focus){
+      setTimeout(() => {
+        const el = document.getElementById(btn.dataset.focus);
+        if(el){ el.focus(); el.scrollIntoView({block:'center'}); }
+      }, 100);
+    }
+  });
+});
+document.querySelectorAll('[data-back]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if(selectedKey !== null && isDirty()
+       && !confirm('Modifications non enregistrées. Retourner à l\'accueil ?')) return;
+    showPanel('homePanel');
+  });
+});
+
 document.getElementById('loadBtn').addEventListener('click', () => {
   const k = numberToKey(); if(!k) return;
   const a = animals.find(x => x.key === k);
-  if(!a){ setMessage('Aucun animal « ' + k + ' ». Utilisez « ➕ Créer ».', true); return; }
+  if(!a){ setMessage('Aucun animal « '+k+' ». Utilisez « ➕ Créer ».', true); return; }
   selectAnimal(k);
 });
 document.getElementById('createBtn').addEventListener('click', () => {
   const k = numberToKey(); if(!k) return;
   if(animals.some(x => x.key === k)){
-    if(confirm('« ' + k + ' » existe déjà. Le charger ?')) selectAnimal(k);
+    if(confirm('« '+k+' » existe déjà. Le charger ?')) selectAnimal(k);
     return;
   }
-  if(selectedKey !== null && isDirty() && !confirm('Modifications non enregistrées. Créer quand même ?')) return;
+  if(selectedKey !== null && isDirty()
+     && !confirm('Modifications non enregistrées. Créer quand même ?')) return;
   const parts = k.split('-');
-  const cat = parts[0], n = parseInt(parts[1], 10);
+  const cat = parts[0], n = parseInt(parts[1],10);
   const c = categories.find(x => x.key === cat);
-  const batch = batchFor(cat, n);
-  animals.push({
-    key:k, cat, number:n, label:buildLabel(cat, n), kind:c.kind, batch,
-    status:'Présent', name:'', mother:'', birth:'', lastHealth:'', notes:''
-  });
+  const batch = batchFor(cat,n);
+  animals.push({ key:k, cat, number:n, label:buildLabel(cat,n), kind:c.kind, batch,
+    status:'Présent', name:'', mother:'', birth:'', lastHealth:'', notes:'' });
   persist(); render(); fillForm(animals.find(x => x.key === k));
-  setMessage(c.label + ' ' + n + (batch > 1 ? ' (lot ' + batch + ')' : '') + ' créé.');
+  setMessage(c.label+' '+n+(batch>1?' (lot '+batch+')':'')+' créé.');
 });
 document.getElementById('saveBtn').addEventListener('click', () => {
   if(selectedKey === null){ setMessage('Sélectionnez d’abord une fiche.', true); return; }
@@ -493,16 +609,16 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   a.notes = document.getElementById('notes').value.trim();
   snapshot = formValues();
   persist(); render();
-  setMessage('Fiche enregistrée : ' + a.label);
+  setMessage('Fiche enregistrée : '+a.label);
 });
 document.getElementById('deleteBtn').addEventListener('click', () => {
   if(selectedKey === null){ setMessage('Sélectionnez d’abord une fiche.', true); return; }
   const a = animals.find(x => x.key === selectedKey);
   if(!a){ setMessage('Fiche introuvable.', true); return; }
-  if(!confirm('Supprimer « ' + a.label + ' » ? Action irréversible.')) return;
+  if(!confirm('Supprimer « '+a.label+' » ? Action irréversible.')) return;
   animals = animals.filter(x => x.key !== selectedKey);
   persist(); clearForm(); render();
-  setMessage('Fiche supprimée : ' + a.label);
+  setMessage('Fiche supprimée : '+a.label);
 });
 document.getElementById('newBtn').addEventListener('click', clearForm);
 
@@ -510,7 +626,7 @@ document.getElementById('addColorBtn').addEventListener('click', () => {
   const hex = randomDarkHex();
   palette.push([hex, lighten(hex)]);
   savePalette(); renderPalette(); render();
-  setMessage('Nouvelle couleur ajoutée pour le lot ' + (palette.length + 1) + '.');
+  setMessage('Nouvelle couleur ajoutée pour le lot '+(palette.length+1)+'.');
 });
 document.getElementById('resetPaletteBtn').addEventListener('click', () => {
   if(!confirm('Remettre les 15 couleurs par défaut ? Les animaux ne sont pas touchés.')) return;
@@ -520,46 +636,39 @@ document.getElementById('resetPaletteBtn').addEventListener('click', () => {
 });
 
 document.getElementById('exportBtn').addEventListener('click', () => {
-  const stamp = new Date().toISOString().slice(0, 10);
-  const payload = { version: '2.1', animals: animals, palette: palette };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const stamp = new Date().toISOString().slice(0,10);
+  const payload = { version:'2.2', animals, palette };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'sauvegarde-ferme-khaldi-' + stamp + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = 'sauvegarde-ferme-khaldi-'+stamp+'.json';
+  a.click(); URL.revokeObjectURL(url);
   setMessage('Export lancé.');
 });
 document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
-document.getElementById('importFile').addEventListener('change', async (e) => {
+document.getElementById('importFile').addEventListener('change', async e => {
   const file = e.target.files[0]; if(!file) return;
   try{
     const parsed = JSON.parse(await file.text());
     const data = Array.isArray(parsed) ? parsed : parsed.animals;
-    if(!Array.isArray(data) || data.length === 0) throw new Error('fichier vide');
+    if(!Array.isArray(data) || !data.length) throw new Error('fichier vide');
     const keys = new Set();
     for(const a of data){
       if(!a || typeof a.key !== 'string' || typeof a.label !== 'string' || !a.cat) throw new Error('structure incorrecte');
       if(!categories.some(c => c.key === a.cat)) throw new Error('catégorie inconnue');
-      if(keys.has(a.key)) throw new Error('clé en double : ' + a.key);
+      if(keys.has(a.key)) throw new Error('clé en double : '+a.key);
       keys.add(a.key);
     }
-    if(!confirm('Remplacer les ' + animals.length + ' fiches actuelles par ces ' + data.length + ' fiches ?')){ e.target.value=''; return; }
+    if(!confirm('Remplacer les '+animals.length+' fiches actuelles par ces '+data.length+' fiches ?')){ e.target.value=''; return; }
     animals = data.map(a => {
-      const number = a.number || parseInt(String(a.key).split('-')[1], 10) || 1;
+      const number = a.number || parseInt(String(a.key).split('-')[1],10) || 1;
       const batch = a.batch || batchFor(a.cat, number);
       return Object.assign({}, a, { number, batch, label: a.label || buildLabel(a.cat, number) });
     });
-    if(!Array.isArray(parsed) && Array.isArray(parsed.palette)){
-      palette = parsed.palette.slice();
-      savePalette();
-    }
+    if(!Array.isArray(parsed) && Array.isArray(parsed.palette)){ palette = parsed.palette.slice(); savePalette(); }
     persist(); clearForm(); render(); renderPalette();
-    setMessage('Sauvegarde importée : ' + animals.length + ' fiches.');
-  }catch(err){
-    setMessage('Fichier invalide (' + err.message + ').', true);
-  }
+    setMessage('Sauvegarde importée : '+animals.length+' fiches.');
+  }catch(err){ setMessage('Fichier invalide ('+err.message+').', true); }
   e.target.value = '';
 });
 document.getElementById('resetBtn').addEventListener('click', () => {
@@ -569,16 +678,18 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   setMessage('Fiches préremplies réinitialisées.');
 });
 
+/* ---------- Démarrage ---------- */
 try{
   palette = loadPalette();
   load();
   render();
   renderPalette();
   clearForm();
+  renderHome();
+  showPanel('homePanel');
 }catch(err){
   const m = document.getElementById('message');
-  m.textContent = 'Erreur au démarrage : ' + err.message;
-  m.style.color = '#a52c1d';
+  if(m){ m.textContent = 'Erreur au démarrage : '+err.message; m.style.color = '#a52c1d'; }
   console.error(err);
 }
 </script>
